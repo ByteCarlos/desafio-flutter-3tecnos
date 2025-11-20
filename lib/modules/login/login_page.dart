@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/routes/app_routes.dart';
 import '../../shared/utils/input_masks.dart';
+import '../../shared/theme/app_colors.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,9 +21,9 @@ class _LoginPageState extends State<LoginPage> {
     if (senha == "123456" && cpf.length == 11) {
       Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("CPF ou senha inválidos")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("CPF ou senha inválidos")));
     }
   }
 
@@ -35,12 +36,14 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Placeholder(
-              fallbackHeight: 120,
-              fallbackWidth: 120,
-            ), // Espaço para LOGO
-
-            const SizedBox(height: 32),
+            SizedBox(
+              height: 150,
+              width: 300,
+              child: Image.asset(
+                "assets/images/logo_3tecnos.png",
+                fit: BoxFit.contain,
+              ),
+            ),
 
             TextField(
               controller: cpfController,
@@ -57,15 +60,43 @@ class _LoginPageState extends State<LoginPage> {
 
             const SizedBox(height: 20),
 
-            ElevatedButton(
-              onPressed: entrar,
-              child: const Text("Entrar"),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: entrar,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  backgroundColor: AppColors.secondary,
+                ),
+                child: const Text(
+                  "Entrar",
+                  style: TextStyle(fontSize: 24, color: Colors.white),
+                ),
+              ),
             ),
 
-            TextButton(
-              onPressed: () => Navigator.pushNamed(context, AppRoutes.cadastro),
-              child: const Text("Criar conta"),
-            )
+            const SizedBox(height: 16),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.cadastro),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  backgroundColor: AppColors.light,
+                ),
+                child: const Text(
+                  "Cadastrar-se",
+                  style: TextStyle(fontSize: 24, color: Colors.black),
+                ),
+              ),
+            ),
           ],
         ),
       ),

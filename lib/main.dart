@@ -12,7 +12,7 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Meu App Demo',
+      title: 'Desafio 3Tecnos',
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.login,
       routes: AppPages.pages,

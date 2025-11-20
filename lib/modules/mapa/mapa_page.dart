@@ -19,10 +19,41 @@ class _MapaPageState extends State<MapaPage> {
   final lngController = TextEditingController();
 
   Future pegarLocalizacao() async {
+    bool servicosHabilitados = await Geolocator.isLocationServiceEnabled();
+    if (!servicosHabilitados) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ative a localização do dispositivo.")),
+      );
+      return;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Permissão de localização negada permanentemente.\n"
+            "Vá até as configurações do aparelho para liberar.",
+          ),
+        ),
+      );
+      return;
+    }
+
     final pos = await Geolocator.getCurrentPosition();
+
     setState(() {
       posicaoAtual = LatLng(pos.latitude, pos.longitude);
     });
+
+    try {
+      mapController.animateCamera(CameraUpdate.newLatLng(posicaoAtual));
+    } catch (_) {}
   }
 
   @override
@@ -39,9 +70,7 @@ class _MapaPageState extends State<MapaPage> {
       setState(() {
         posicaoAtual = LatLng(lat, lng);
       });
-      mapController.animateCamera(
-        CameraUpdate.newLatLng(posicaoAtual),
-      );
+      mapController.animateCamera(CameraUpdate.newLatLng(posicaoAtual));
     }
   }
 
@@ -59,7 +88,10 @@ class _MapaPageState extends State<MapaPage> {
                 zoom: 14,
               ),
               markers: {
-                Marker(markerId: const MarkerId("Atual"), position: posicaoAtual)
+                Marker(
+                  markerId: const MarkerId("Atual"),
+                  position: posicaoAtual,
+                ),
               },
             ),
           ),
@@ -82,10 +114,10 @@ class _MapaPageState extends State<MapaPage> {
                 ElevatedButton(
                   onPressed: atualizarLocal,
                   child: const Text("Exibir localização"),
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
