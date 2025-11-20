@@ -72,8 +72,8 @@ class _HomePageState extends State<HomePage> {
           onTap: (index) {
             setState(() => currentIndex = index);
 
-            if (index == 0) {
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
+            if (index == 1) {
+              Navigator.pushReplacementNamed(context, AppRoutes.mapa);
             } else if (index == 2) {
               Navigator.pushNamedAndRemoveUntil(
                 context,
