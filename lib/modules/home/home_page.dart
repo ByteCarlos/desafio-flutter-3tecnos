@@ -72,8 +72,14 @@ class _HomePageState extends State<HomePage> {
           onTap: (index) {
             setState(() => currentIndex = index);
 
-            if (index == 1) {
-              Navigator.pushNamed(context, AppRoutes.mapa);
+            if (index == 0) {
+              Navigator.pushReplacementNamed(context, AppRoutes.home);
+            } else if (index == 2) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.login,
+                (route) => false,
+              );
             }
           },
           elevation: 0,
@@ -81,8 +87,6 @@ class _HomePageState extends State<HomePage> {
           type: BottomNavigationBarType.fixed,
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.white70,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home, size: 28),
@@ -91,6 +95,10 @@ class _HomePageState extends State<HomePage> {
             BottomNavigationBarItem(
               icon: Icon(Icons.map, size: 28),
               label: "Mapa",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.logout, size: 28),
+              label: "Sair",
             ),
           ],
         ),

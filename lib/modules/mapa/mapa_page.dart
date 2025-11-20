@@ -1,7 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import '../../core/routes/app_routes.dart';
+import '../../shared/theme/app_colors.dart';
 
 class MapaPage extends StatefulWidget {
   const MapaPage({super.key});
@@ -11,12 +13,13 @@ class MapaPage extends StatefulWidget {
 }
 
 class _MapaPageState extends State<MapaPage> {
-  late GoogleMapController mapController;
-
-  LatLng posicaoAtual = const LatLng(-15.7797, -47.9297); // Brasília default
+  LatLng posicaoAtual = const LatLng(-15.7797, -47.9297);
+  final MapController mapController = MapController();
 
   final latController = TextEditingController();
   final lngController = TextEditingController();
+
+  int currentIndex = 1;
 
   Future pegarLocalizacao() async {
     bool servicosHabilitados = await Geolocator.isLocationServiceEnabled();
@@ -51,9 +54,7 @@ class _MapaPageState extends State<MapaPage> {
       posicaoAtual = LatLng(pos.latitude, pos.longitude);
     });
 
-    try {
-      mapController.animateCamera(CameraUpdate.newLatLng(posicaoAtual));
-    } catch (_) {}
+    mapController.move(posicaoAtual, 14);
   }
 
   @override
@@ -70,55 +71,137 @@ class _MapaPageState extends State<MapaPage> {
       setState(() {
         posicaoAtual = LatLng(lat, lng);
       });
-      mapController.animateCamera(CameraUpdate.newLatLng(posicaoAtual));
+
+      mapController.move(posicaoAtual, 14);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Mapa")),
       body: Column(
         children: [
           Expanded(
-            child: GoogleMap(
-              onMapCreated: (c) => mapController = c,
-              initialCameraPosition: CameraPosition(
-                target: posicaoAtual,
-                zoom: 14,
+            child: FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                initialCenter: posicaoAtual,
+                initialZoom: 14,
               ),
-              markers: {
-                Marker(
-                  markerId: const MarkerId("Atual"),
-                  position: posicaoAtual,
+              children: [
+                TileLayer(
+                  urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  userAgentPackageName: 'com.example.desafio_3tecnos',
                 ),
-              },
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      width: 40,
+                      height: 40,
+                      point: posicaoAtual,
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Colors.red,
+                        size: 40,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
 
           Container(
-            padding: const EdgeInsets.all(12),
-            color: Colors.grey.shade200,
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            ),
             child: Column(
               children: [
                 TextField(
                   controller: latController,
-                  decoration: const InputDecoration(labelText: "Latitude"),
+                  decoration: const InputDecoration(
+                    labelText: "Latitude",
+                    prefixIcon: Icon(Icons.location_on),
+                  ),
                   keyboardType: TextInputType.number,
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: lngController,
-                  decoration: const InputDecoration(labelText: "Longitude"),
+                  decoration: const InputDecoration(
+                    labelText: "Longitude",
+                    prefixIcon: Icon(Icons.location_searching),
+                  ),
                   keyboardType: TextInputType.number,
                 ),
-                ElevatedButton(
-                  onPressed: atualizarLocal,
-                  child: const Text("Exibir localização"),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: atualizarLocal,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: AppColors.success,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      "Localizar",
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ],
+      ),
+
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.secondary,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (index) {
+            setState(() => currentIndex = index);
+
+            if (index == 0) {
+              Navigator.pushReplacementNamed(context, AppRoutes.home);
+            } else if (index == 2) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.login,
+                (route) => false,
+              );
+            }
+          },
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white70,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home, size: 28),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.map, size: 28),
+              label: "Mapa",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.logout, size: 28),
+              label: "Sair",
+            ),
+          ],
+        ),
       ),
     );
   }
