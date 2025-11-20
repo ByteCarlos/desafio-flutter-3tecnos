@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          // Conteúdo principal
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
