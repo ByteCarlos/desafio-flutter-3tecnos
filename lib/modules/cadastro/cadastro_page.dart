@@ -19,10 +19,43 @@ class _CadastroPageState extends State<CadastroPage> {
   final picker = ImagePicker();
 
   Future pegarFoto() async {
-    final img = await picker.pickImage(source: ImageSource.camera);
-    if (img != null) {
-      setState(() => foto = File(img.path));
-    }
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Tirar foto"),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final img = await picker.pickImage(
+                    source: ImageSource.camera,
+                  );
+                  if (img != null) {
+                    setState(() => foto = File(img.path));
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text("Escolher da galeria"),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final img = await picker.pickImage(
+                    source: ImageSource.gallery,
+                  );
+                  if (img != null) {
+                    setState(() => foto = File(img.path));
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   final cpfController = TextEditingController();
@@ -69,7 +102,7 @@ class _CadastroPageState extends State<CadastroPage> {
                 Navigator.pop(context);
               },
               child: const Text("OK"),
-            )
+            ),
           ],
         ),
       );
@@ -100,8 +133,11 @@ class _CadastroPageState extends State<CadastroPage> {
                       backgroundImage: foto != null ? FileImage(foto!) : null,
                       backgroundColor: Colors.white,
                       child: foto == null
-                          ? const Icon(Icons.camera_alt,
-                              size: 40, color: Colors.grey)
+                          ? const Icon(
+                              Icons.camera_alt,
+                              size: 40,
+                              color: Colors.grey,
+                            )
                           : null,
                     ),
                   ),
@@ -185,8 +221,7 @@ class _CadastroPageState extends State<CadastroPage> {
                     child: ElevatedButton(
                       onPressed: cadastrar,
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
                         ),
