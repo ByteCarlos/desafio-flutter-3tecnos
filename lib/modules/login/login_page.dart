@@ -16,13 +16,12 @@ class _LoginPageState extends State<LoginPage> {
   final cpfController = TextEditingController();
   final senhaController = TextEditingController();
 
-  // === FUNÇÃO PARA VALIDAR CPF ===
+  // Essa função valida o cpf
   bool validarCPF(String cpf) {
     cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
 
     if (cpf.length != 11) return false;
 
-    // Sequências repetidas não são válidas
     if (RegExp(r'^(\d)\1*$').hasMatch(cpf)) return false;
 
     int soma = 0;
@@ -74,7 +73,6 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // LOGO
                   SizedBox(
                     height: 150,
                     width: 300,
@@ -85,7 +83,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 30),
 
-                  // === CAMPO CPF COM VALIDAÇÃO ===
                   TextFormField(
                     controller: cpfController,
                     decoration: InputDecoration(
@@ -109,7 +106,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // CAMPO SENHA
                   TextFormField(
                     controller: senhaController,
                     obscureText: true,
@@ -131,7 +127,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // BOTÃO ENTRAR
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -151,7 +146,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // BOTÃO CADASTRAR-SE
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
